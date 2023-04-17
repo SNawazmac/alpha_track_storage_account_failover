@@ -17,7 +17,7 @@ jobs:
       uses: azure/powershell@v1
       with:
         inlineScript: |
-          ./Invoke_Failover_Storage_multi-values_param.ps1 -resource_group_name "${{vars.STORAGEACCOUNT_RESOURCE_GROUP_NAME}}" -storageaccount_names "${{vars.STORAGEACCOUNT_NAMES}}" -sku "${{vars.SKU}}"  
+          ./Invoke_Failover_Storage_multi-values_param.ps1 -resource_group_name "${{vars.STORAGEACCOUNT_RESOURCE_GROUP_NAME}}" -storageaccount_names "${{vars.STORAGEACCOUNT_NAMES}}" -sku "${{vars.STORAGE_SKU}}"  
         azPSVersion: "latest"
       
     - name: Link PE to Private DNS Zone
