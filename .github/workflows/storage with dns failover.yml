@@ -1,3 +1,4 @@
+name: atorage with dns failover
 on: workflow_dispatch
 jobs:  
   job1:
