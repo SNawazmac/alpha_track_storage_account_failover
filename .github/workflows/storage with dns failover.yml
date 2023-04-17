@@ -1,0 +1,27 @@
+on: workflow_dispatch
+jobs:  
+  job1:
+    permissions:
+      contents: none
+    runs-on: ubuntu-latest       
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2 
+    - name: Login via Az module
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_CREDENTIALS_Deloitte}}
+        enable-AzPSSession: true   
+    - name: Invoke storage failover and set GRS
+      uses: azure/powershell@v1
+      with:
+        inlineScript: |
+          ./Invoke_Failover_Storage_multi-values_param.ps1 -resource_group_name "${{vars.STORAGEACCOUNT_RESOURCE_GROUP_NAME}}" -storageaccount_names "${{vars.STORAGEACCOUNT_NAMES}}" -sku "${{vars.SKU}}"  
+        azPSVersion: "latest"
+      
+    - name: Link PE to Private DNS Zone
+      uses: azure/powershell@v1
+      with:
+        inlineScript: |
+          ./Link_Multi_PEs_to_DNS_Zone.ps1 -primary_subscription_Id "${{vars.PRIMARY_SUBSCRIPTION_ID}}" -secondary_subscription_Id "${{vars.SECONDARY_SUBSCRIPTION_ID}}" -Private_DNS_Zone_resource_group_name "${{vars.PRIVATE_DNS_ZONE_RESOURCE_GROUP_NAME}}" -secondary_resource_group_name "${{vars.SECONDARYPE_RESOURCE_GROUP_NAME}}" -secondary_private_endpoint_name "${{vars.SECONDARY_PRIVATE_ENDPOINT_NAME}}" -zone_name "${{vars.PRIVATE_DNS_ZONE_NAME}}" -Private_DNS_Zone_Group_name "${{vars.PRIVATE_DNS_ZONE_GROUP_NAME}}" 
+        azPSVersion: "latest"
