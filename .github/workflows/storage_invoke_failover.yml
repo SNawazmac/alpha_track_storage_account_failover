@@ -15,7 +15,7 @@ on:
       AZURE_CREDENTIALS_DELOITTE_SUB:
         required: true
 jobs:  
-  job1:
+  Invoke_storage_account_failover:
     permissions:
       contents: none
     runs-on: ubuntu-latest       
