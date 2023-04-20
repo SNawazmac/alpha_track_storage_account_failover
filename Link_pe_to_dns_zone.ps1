@@ -1,5 +1,5 @@
 param(
-[Parameter(Mandatory=$true)][string]$primary_subscription_Id,           #Enter the primary subscription Id of private DNS zone
+[Parameter(Mandatory=$true)][string]$private_dns_zone_subscription_Id,           #Enter the primary subscription Id of private DNS zone
 [Parameter(Mandatory=$true)][string]$secondary_private_endpoint_subscription_Id,         #Enter the secondary subscription Id of secondary private endpoint
 [Parameter(Mandatory=$true)][string]$secondary_private_endpoint_resource_group_name,     #Enter the secondary resourcegroup name where the secondary private endpoint is existing           
 [Parameter(Mandatory=$true)][string]$secondary_private_endpoint_name,   #Enter the secondary private endpoint name
@@ -9,7 +9,7 @@ param(
 )
 
 #The below command sets authentication information for cmdlets that run in the current session
-Set-AzContext -Subscription $primary_subscription_Id
+Set-AzContext -Subscription $private_dns_zone_subscription_Id
 
 #The below commands fetches the existing Private DNS Zone information to be linked
 $Zone = Get-AzPrivateDnsZone -ResourceGroupName $private_dns_zone_resource_group_name -Name $storage_account_private_dns_zone_name
