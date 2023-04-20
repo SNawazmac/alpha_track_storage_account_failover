@@ -1,4 +1,4 @@
-name: storage with dns failover
+name: Invoke storage account failover
 on:
   workflow_call:
     inputs:
@@ -11,27 +11,6 @@ on:
       sku:
         required: true
         type: string  
-      primary_subscription_Id:
-        required: true
-        type: string
-      private_dns_zone_resource_group_name:
-        required: true
-        type: string
-      storage_account_private_dns_zone_group_name:
-        required: true
-        type: string
-      storage_account_private_dns_zone_name:
-        required: true
-        type: string
-      secondary_private_endpoint_resource_group_name:
-        required: true
-        type: string
-      secondary_private_endpoint_subscription_Id:
-        required: true
-        type: string
-      secondary_private_endpoint_name:
-        required: true
-        type: string
     secrets:
       AZURE_CREDENTIALS_DELOITTE_SUB:
         required: true
@@ -50,16 +29,10 @@ jobs:
       with:
         creds: ${{secrets.AZURE_CREDENTIALS_DELOITTE_SUB}}
         enable-AzPSSession: true   
-    - name: Invoke storage failover and set GRS
+    - name: Invoke storage account failover and set redundancy to GRS
       uses: azure/powershell@v1
       with:
         inlineScript: |
-         ./Invoke_Failover_Storage_multi-values_param.ps1 -storage_account_resource_group_name "${{inputs.storage_account_resource_group_name}}" -private_storage_account_names "${{inputs.private_storage_account_names}}" -sku "${{inputs.sku}}"  
+         ./storage_account_invoke_failover.ps1 -storage_account_resource_group_name "${{inputs.storage_account_resource_group_name}}" -private_storage_account_names "${{inputs.private_storage_account_names}}" -sku "${{inputs.sku}}"  
         azPSVersion: "latest"
-      
-    - name: Link PE to Private DNS Zone
-      uses: azure/powershell@v1
-      with:
-        inlineScript: |
-          ./Link_Multi_PEs_to_DNS_Zone.ps1 -primary_subscription_Id "${{ inputs.primary_subscription_Id }}" -private_dns_zone_resource_group_name "${{ inputs.private_dns_zone_resource_group_name }}" -storage_account_private_dns_zone_group_name "${{ inputs.storage_account_private_dns_zone_group_name}} -storage_account_private_dns_zone_name "${{ inputs.storage_account_private_dns_zone_name }} -secondary_private_endpoint_resource_group_name "${{ inputs.secondary_private_endpoint_resource_group_name }} -secondary_private_endpoint_subscription_Id "${{inputs.secondary_private_endpoint_subscription_Id}} -secondary_private_endpoint_name "${{inputs.secondary_private_endpoint_name}}
-        azPSVersion: "latest"
+  
