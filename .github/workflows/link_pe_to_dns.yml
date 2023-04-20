@@ -1,0 +1,49 @@
+name: storage with dns failover
+on:
+  workflow_call:
+    inputs:
+      private_dns_zone_subscription_Id:
+        required: true
+        type: string
+      private_dns_zone_resource_group_name:
+        required: true
+        type: string
+      storage_account_private_dns_zone_group_name:
+        required: true
+        type: string
+      storage_account_private_dns_zone_name:
+        required: true
+        type: string
+      secondary_private_endpoint_resource_group_name:
+        required: true
+        type: string
+      secondary_private_endpoint_subscription_Id:
+        required: true
+        type: string
+      secondary_private_endpoint_name:
+        required: true
+        type: string
+    secrets:
+      AZURE_CREDENTIALS_DELOITTE_SUB:
+        required: true
+jobs:  
+  link_pe_to_dns:
+    permissions:
+      contents: none
+    runs-on: ubuntu-latest       
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+      with:
+        repository: SNawazmac/storage_account_failover
+    - name: Login via Az module
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_CREDENTIALS_DELOITTE_SUB}}
+        enable-AzPSSession: true
+    - name: Link PE to Private DNS Zone
+      uses: azure/powershell@v1
+      with:
+        inlineScript: |
+          ./Link_pe_to_dns_zone.ps1 -private_dns_zone_subscription_Id "${{ inputs.private_dns_zone_subscription_Id }}" -private_dns_zone_resource_group_name "${{ inputs.private_dns_zone_resource_group_name }}" -storage_account_private_dns_zone_group_name "${{ inputs.storage_account_private_dns_zone_group_name }} -storage_account_private_dns_zone_name "${{ inputs.storage_account_private_dns_zone_name }} -secondary_private_endpoint_resource_group_name "${{ inputs.secondary_private_endpoint_resource_group_name }} -secondary_private_endpoint_subscription_Id "${{ inputs.secondary_private_endpoint_subscription_Id }} -secondary_private_endpoint_name "${{ inputs.secondary_private_endpoint_name }}
+        azPSVersion: "latest"
