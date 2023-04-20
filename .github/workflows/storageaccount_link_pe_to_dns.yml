@@ -1,4 +1,4 @@
-name: storage with dns failover
+name: storage account link pe to dns
 on:
   workflow_call:
     inputs:
