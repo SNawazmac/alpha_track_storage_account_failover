@@ -1,0 +1,46 @@
+name: storage account dns failback
+on:
+  workflow_call:
+    inputs: 
+      private_dns_zone_subscription_Id:
+        required: true
+        type: string
+      private_dns_zone_resource_group_name:
+        required: true
+        type: string
+      storage_account_private_dns_zone_record_name:
+        required: true
+        type: string
+      storage_account_private_dns_zone_name:
+        required: true
+        type: string
+      storage_account_primary_private_endpoint_IP:
+        required: true
+        type: string
+      storage_account_secondary_private_endpoint_IP:
+        required: true
+        type: string  
+    secrets:
+      AZURE_CREDENTIALS_DELOITTE_SUB:
+        required: true
+jobs:  
+  storage_dns_record_update:
+    permissions:
+      contents: none
+    runs-on: ubuntu-latest       
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+      with:
+        repository: SNawazmac/storage_account_failover
+    - name: Login via Az module
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_CREDENTIALS_DELOITTE_SUB}}
+        enable-AzPSSession: true        
+    - name: Update recordset of Private DNS Zone
+      uses: azure/powershell@v1
+      with:
+        inlineScript: |
+         ./Update_DNS_Records_IPs.ps1 -private_dns_zone_subscription_Id "${{inputs.private_dns_zone_subscription_Id}}" -private_dns_zone_resource_group_name "${{inputs.private_dns_zone_resource_group_name}}" -storage_account_private_dns_zone_name "${{inputs.storage_account_private_dns_zone_name}}" -storage_account_private_dns_zone_record_name "${{inputs.storage_account_private_dns_zone_record_name}}" -storage_account_primary_private_endpoint_IP "${{inputs.storage_account_primary_private_endpoint_IP}}" -storage_account_secondary_private_endpoint_IP "${{inputs.storage_account_secondary_private_endpoint_IP}}"
+        azPSVersion: "latest"
